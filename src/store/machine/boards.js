@@ -1,6 +1,25 @@
 'use strict'
 
 const boardDefinitions = {
+	LPC176x: {
+		firmwareFileRegEx: /firmware(.*)\.bin/i,
+		firmwareFile: 'firmware.bin',
+		motorWarningCurrent: 1800,
+		motorLimitCurrent: 2000,
+		seriesResistor: 4700,
+		microstepping: true,
+		microsteppingInterpolation: false,
+		maxDrives: 5,
+		maxHeaters: 3,
+		maxThermistors: 3,
+		maxRtdBoards: 2,
+		maxFans: 2,
+		hasDisplay: true,
+		hasEthernet: true,
+		hasWiFi: false,
+		hasPowerFailureDetection: false,
+		hasMotorLoadDetection: false
+	},
 	duetwifi10: {
 		firmwareFileRegEx: /Duet2CombinedFirmware(.*)\.bin/i,
 		firmwareFile: 'Duet2CombinedFirmware.bin',
