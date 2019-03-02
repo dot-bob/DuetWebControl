@@ -80,7 +80,7 @@ export default {
 			}
 		},
 		fileEdited(filename) {
-			if (filename === Path.configFile && !this.state.isPrinting) {
+			if ( (filename === Path.configFile || filename === Path.boardFile) && !this.state.isPrinting) {
 				this.showResetPrompt = true;
 			}
 		},

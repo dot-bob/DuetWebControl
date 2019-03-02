@@ -91,6 +91,7 @@ export default {
 	sys: '0:/sys',
 	www: '0:/www',
 
+	boardFile: '0:/sys/board.txt',
 	configFile: '0:/sys/config.g',
 	configBackupFile: '0:/sys/config.g.bak',
 	dwcCacheFile: '0:/sys/dwc2cache.json',
