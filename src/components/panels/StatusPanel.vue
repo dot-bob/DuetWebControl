@@ -136,7 +136,7 @@ a:not(:hover) {
 
 						<v-flex>
 							<v-layout row wrap>
-								<v-flex v-if="electronics.vIn.current !== undefined">
+								<v-flex v-if="electronics.vIn.current !== null">
 									<v-layout column>
 										<v-flex tag="strong">
 											{{ $t('panel.status.vIn') }}
@@ -156,7 +156,7 @@ a:not(:hover) {
 									</v-layout>
 								</v-flex>
 
-								<v-flex v-if="electronics.mcuTemp.current !== undefined">
+								<v-flex v-if="electronics.mcuTemp.current !== null">
 									<v-layout column>
 										<v-flex tag="strong">
 											{{ $t('panel.status.mcuTemp') }}
@@ -205,6 +205,7 @@ import { mapState, mapGetters } from 'vuex'
 
 export default {
 	computed: {
+		...mapState('settings', ['darkTheme']),
 		...mapGetters(['isConnected']),
 		...mapState('machine/model', ['electronics', 'move', 'sensors', 'state'])
 	},
@@ -223,11 +224,13 @@ export default {
 			if (index && this.sensors.probes.length > 1){
 				result.push('ml-2');
 			}
-			if (!this.state.isPrinting) {
+			if (!this.state.isPrinting && probe.value !== null) {
 				if (probe.value >= probe.threshold) {
-					result.push('error');
+					result.push('red');
+					result.push(this.darkTheme ? 'darken-3' : 'lighten-4');
 				} else if (probe.value > probe.threshold * 0.9) {
-					result.push('warning');
+					result.push('orange');
+					result.push(this.darkTheme ? 'darken-2' : 'lighten-4');
 				}
 			}
 			return result;

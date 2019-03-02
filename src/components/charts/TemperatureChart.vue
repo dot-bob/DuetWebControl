@@ -6,7 +6,12 @@
 }
 
 .content {
+	position: relative;
 	flex-grow: 1;
+}
+
+.content > canvas {
+	position: absolute;
 }
 </style>
 
@@ -47,6 +52,7 @@ function makeDataset(heaterIndex, extra, label) {
 		borderDash: extra ? [10, 5] : undefined,
 		borderWidth: 2,
 		data: [],
+		locale: i18n.locale,
 		pointRadius: 0,
 		pointHitRadius: 0,
 		showLine: true
@@ -65,17 +71,21 @@ const tempSamples = {
 function pushSeriesData(machine, heaterIndex, heater, extra) {
 	// Get series from dataset
 	const machineData = tempSamples[machine];
-	let dataset;
-	machineData.temps.forEach(function(item) {
+	let dataset = machineData.temps.find(function(item) {
 		if (item.heaterIndex === heaterIndex && item.extra === extra) {
-			dataset = item;
+			return item;
 		}
 	});
 
-	if (!dataset) {
+	if (!dataset || dataset.locale !== i18n.locale) {
 		const label = heater.name ? heater.name : i18n.t('chart.temperature.heater', [heaterIndex]);
-		dataset = makeDataset(heaterIndex, extra, label);
-		machineData.temps.push(dataset);
+		if (dataset) {
+			dataset.label = label;
+			dataset.locale = i18n.locale;
+		} else {
+			dataset = makeDataset(heaterIndex, extra, label);
+			machineData.temps.push(dataset);
+		}
 	}
 
 	// Add new sample
@@ -107,8 +117,8 @@ export default {
 	},
 	methods: {
 		update() {
-			this.options.scales.yAxes[0].ticks.max = this.maxHeaterTemperature || defaultMaxTemperature;
-			this.options.scales.xAxes[0].ticks.max = new Date();
+			this.chart.config.options.scales.yAxes[0].ticks.max = this.maxHeaterTemperature || defaultMaxTemperature;
+			this.chart.config.options.scales.xAxes[0].ticks.max = new Date();
 			this.chart.update();
 		},
 		applyDarkTheme(active) {
@@ -147,6 +157,7 @@ export default {
 				}
 			},
 			maintainAspectRatio: false,
+			responsive: true,
 			responsiveAnimationDuration: 0, // animation duration after a resize
 			scales: {
 				xAxes: [
@@ -169,7 +180,7 @@ export default {
 						time: {
 							unit: 'minute',
 							displayFormats: {
-								minute: 'LT'
+								minute: 'HH:mm'
 							}
 						},
 						type: 'time'
@@ -295,7 +306,7 @@ export default {
 				labels: tempSamples[machine].times,
 				datasets: tempSamples[machine].temps
 			};
-			this.chart.update();
+			this.update();
 		}
 	}
 }

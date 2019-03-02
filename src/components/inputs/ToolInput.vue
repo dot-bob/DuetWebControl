@@ -21,8 +21,8 @@ export default {
 			if (this.bed) {
 				return this.temperatures.bed[key];
 			}
-			if (this.chamer) {
-				return this.temperatures.chamber[key];
+			if (this.chamber) {
+				return this.temperatures.chamber;
 			}
 			if (this.spindle) {
 				return this.spindleRPM;
@@ -152,6 +152,16 @@ export default {
 	},
 	mounted() {
 		this.input = this.$el.querySelector('input');
+		if (this.tool) {
+			this.value = this.tool[this.active ? 'active' : 'standby'][this.heaterIndex];
+		} else if (this.bed) {
+			this.value = this.bed[this.active ? 'active' : 'standby'][this.heaterIndex];
+		} else if (this.chamber) {
+			this.value = this.chamber[this.active ? 'active' : 'standby'][this.heaterIndex];
+		} else if (this.spindle) {
+			this.value = this.spindle.active;
+		}
+		this.actualValue = this.value;
 	},
 	watch: {
 		'tool.active'(to) {

@@ -8,12 +8,12 @@
 <template>
 	<v-card>
 		<v-card-title>
-			<v-icon small class="mr-1">polymer</v-icon> Macros
+			<v-icon small class="mr-1">polymer</v-icon> {{ $t('list.macro.caption') }}
 			<v-spacer></v-spacer>
-			<span v-show="isConnected">{{ directory.replace('0:/macros', 'Root') }}</span>
+			<span v-show="isConnected">{{ directory.replace('0:/macros', $t('list.macro.root')) }}</span>
 		</v-card-title>
 
-		<v-card-text class="pa-0" v-show="loading || filelist.length">
+		<v-card-text class="pa-0" v-show="loading || filelist.length || !isRootDirectory">
 			<v-progress-linear v-show="loading" :indeterminate="true" class="my-0"></v-progress-linear>
 
 			<v-list class="pt-0" dense>
@@ -25,7 +25,7 @@
 					</v-list-tile-avatar>
 
 					<v-list-tile-content>
-						Go up
+						<v-list-tile-title>{{ $t('list.baseFileList.goUp') }}</v-list-tile-title>
 					</v-list-tile-content>
 				</v-list-tile>
 
@@ -41,14 +41,14 @@
 					</v-list-tile-content>
 
 					<v-list-tile-action v-if="!item.isDirectory && item.executing">
-						<v-progress-circular indeterminate color="blue"></v-progress-circular>
+						<v-progress-circular class="list-icon" indeterminate color="blue"></v-progress-circular>
 					</v-list-tile-action>
 				</v-list-tile>
 			</v-list>
 		</v-card-text>
 
 		<v-alert :value="!filelist.length" type="info">
-			No Macros
+			{{ $t('list.macro.noMacros') }}
 		</v-alert>
 	</v-card>
 </template>
@@ -58,7 +58,7 @@
 
 import { mapState, mapGetters, mapActions } from 'vuex'
 
-import { getModifiedDirectory } from '../../store/machine'
+import { getModifiedDirectories } from '../../store/machine'
 import { DisconnectedError } from '../../utils/errors.js'
 import Path from '../../utils/path.js'
 
@@ -139,7 +139,7 @@ export default {
 		// Keep track of file changes
 		const that = this;
 		this.unsubscribe = this.$store.subscribeAction(async function(action, state) {
-			if (Path.pathAffectsFilelist(getModifiedDirectory(action, state), that.directory, that.filelist)) {
+			if (Path.pathAffectsFilelist(getModifiedDirectories(action, state), that.directory, that.filelist)) {
 				await that.loadDirectory(that.directory);
 			}
 		});

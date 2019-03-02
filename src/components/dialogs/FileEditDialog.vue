@@ -45,18 +45,18 @@
 
 				<v-toolbar-items>
 					<v-btn v-if="showGCodeHelp" dark flat href="https://duet3d.dozuki.com/Wiki/Gcode" target="_blank">
-						<v-icon class="mr-1">help</v-icon> G-Code Reference
+						<v-icon class="mr-1">help</v-icon> {{ $t('dialog.fileEdit.gcodeReference') }}
 					</v-btn>
 					<v-btn v-if="showDisplayHelp" dark flat href="https://duet3d.dozuki.com/Wiki/Duet_2_Maestro_12864_display_menu_system" target="_blank">
-						<v-icon class="mr-1">help</v-icon> Menu Reference
+						<v-icon class="mr-1">help</v-icon> {{ $t('dialog.fileEdit.menuReference') }} 
 					</v-btn>
 					<v-btn dark flat @click="save">
-						<v-icon class="mr-1">save</v-icon> Save
+						<v-icon class="mr-1">save</v-icon> {{ $t('dialog.fileEdit.save') }}
 					</v-btn>
 				</v-toolbar-items>
 			</v-toolbar>
 
-			<v-textarea ref="textarea" :value="innerValue" @blur="innerValue = $event.target.value" :rows="null" hide-details solo class="edit-textarea" browser-autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></v-textarea>
+			<v-textarea ref="textarea" :value="innerValue" @blur="innerValue = $event.target.value" @keydown.tab.exact.prevent="onTextareaTab" :rows="null" hide-details solo class="edit-textarea" browser-autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></v-textarea>
 		</v-card>
 	</v-dialog>
 </template>
@@ -119,6 +119,13 @@ export default {
 			e.preventDefault();
 			// Chrome requires returnValue to be set
 			e.returnValue = '';
+		},
+		onTextareaTab(e) {
+			const originalSelectionStart = e.target.selectionStart;
+			const textStart = e.target.value.slice(0, originalSelectionStart);
+			const textEnd = e.target.value.slice(originalSelectionStart);
+			e.target.value = `${textStart}\t${textEnd}`;
+			e.target.selectionEnd = e.target.selectionStart = originalSelectionStart + 1;
 		}
 	},
 	watch: {
